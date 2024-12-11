@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Superstore Analysis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Superstore Data Analysis</h1>
+        
+        <form method="POST">
+            <!-- All Filters Always Visible -->
+            <div class="filters-section">
+                <div class="form-group">
+                    <label for="category">Category:</label>
+                    <select name="category" id="category">
+                        <option value="">All Categories</option>
+                        {% for category in categories %}
+                            <option value="{{ category }}">{{ category }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="sub_category">Sub-Category:</label>
+                    <select name="sub_category" id="sub_category">
+                        <option value="">All Sub-Categories</option>
+                        {% for sub_cat in sub_categories %}
+                            <option value="{{ sub_cat }}">{{ sub_cat }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="region">Region:</label>
+                    <select name="region" id="region">
+                        <option value="">All Regions</option>
+                        {% for region in regions %}
+                            <option value="{{ region }}">{{ region }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="segment">Segment:</label>
+                    <select name="segment" id="segment">
+                        <option value="">All Segments</option>
+                        {% for segment in segments %}
+                            <option value="{{ segment }}">{{ segment }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <!-- Query Selection -->
+            <div class="form-group">
+                <label for="query_type">Select Analysis:</label>
+                <select name="query_type" id="query_type" required>
+                    <option value="">Choose Analysis Type...</option>
+                    <option value="total_sales_profit">Total Sales and Profit</option>
+                    <option value="avg_discount_product">Average Discount by Product</option>
+                    <option value="sales_by_year">Total Sales by Year</option>
+                    <option value="profit_by_region">Profit by Region</option>
+                    <option value="negative_profit">Products with Negative Profit</option>
+                </select>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="submit-btn">Generate Report</button>
+            </div>
+        </form>
+
+        <!-- Results Section -->
+        {% if results is not none %}
+        <div class="results">
+            <h2>Analysis Results</h2>
+            {% if query_type == 'total_sales_profit' %}
+                <!-- For dictionary results (Total Sales and Profit) -->
+                {% for key, value in results.items() %}
+                    <p><strong>{{ key }}:</strong> {{ value }}</p>
+                {% endfor %}
+            {% else %}
+                <!-- For DataFrame results -->
+                <table class="table">
+                    <thead>
+                        <tr>
+                            {% for column in results.columns %}
+                                <th>{{ column }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for index, row in results.iterrows() %}
+                            <tr>
+                                {% for value in row %}
+                                    <td>{{ value }}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
